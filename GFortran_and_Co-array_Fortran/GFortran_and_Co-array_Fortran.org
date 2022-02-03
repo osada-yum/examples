@@ -117,11 +117,11 @@ libcoarrays-openmpi-dev/focal,now 2.8.0-1 amd64 [インストール済み]
 実行するには必要なライブラリをリンクする必要があるが, =pkg-config= を使えば良い.
 インストールされた =.pc= ファイルを検索すると
 #+NAME: dpkg-L-coarrays
-#+BEGIN_SRC bash :exports results :results output :cache yes
+#+BEGIN_SRC bash :exports both :results output :cache yes
   dpkg -L libcoarrays-openmpi-dev | grep -e '\.pc$'
 #+END_SRC
 
-#+RESULTS[d84e1d588bc5d5e5250432dd383d896aab7d8c41]: dpkg-L-coarrays
+#+RESULTS[adf6e9ce5f21eba40490a4c44e7bd5dfcb266e94]: dpkg-L-coarrays
 : /usr/lib/x86_64-linux-gnu/pkgconfig/caf-openmpi.pc
 : /usr/lib/x86_64-linux-gnu/open-coarrays/openmpi/pkgconfig/caf-openmpi.pc
 : /usr/lib/x86_64-linux-gnu/open-coarrays/openmpi/pkgconfig/caf.pc
@@ -193,7 +193,7 @@ the file named LICENSE that is distributed with OpenCoarrays.
 
 #+end_example
 
-を実行する.
+を実行すればよい.
 #+NAME: caf-compile-and-run
 #+BEGIN_SRC bash :exports both :results output :cache yes
   caf -o coarrays_test_caf.out coarrays_test.f90
