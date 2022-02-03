@@ -1,0 +1,289 @@
+#+MACRO: current_date (eval (calendar-date-string (calendar-current-date) t 'omit-day-of-week-p))
+#+TITLE: GFortranとCo-array Fortran
+#+AUTHOR: Yuma Osada
+#+DATE: {{{current_date}}}
+#+OPTIONS: toc:t num:3 ^:{}
+#+LATEX_CLASS: luareport
+#+LATEX_COMPILER: lualatex
+
+#+LaTeX_header: \usepackage{minted}
+* 最初に失敗話
+私のPCでは最初にCo-array Fortranを使っても高速化しなかった.
+おそらく, =gfortran= や =mpirun= などのPATHがめちゃくちゃだったせい.(再現ができないので原因が分からない...)
+環境の整理をしたら直った.
+* 実行環境
+- Ubuntu20.04
+- Ubuntu20.04 on VirtualBox6.1.14
+
+#+NAME: path-bash
+#+BEGIN_SRC bash :exports both :results output :cache yes
+  echo ${PATH} | sed -s "s=${HOME}=~=g"
+#+END_SRC
+
+#+RESULTS[49e2f65b05a8e9a1d6eeb9730a941711f0fdd7ec]: path-bash
+: ~/.nvm/versions/node/v16.3.0/bin:~/.cabal/bin:/usr/local/gcc-11.2.0/bin:/opt/bin/:~/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+
+#+NAME: which-gfortran
+#+BEGIN_SRC bash :exports both :results output :cache yes
+  which gfortran
+#+END_SRC
+
+#+RESULTS[26d4eca0f70862ddb96dd215c1257aaab9d8cc47]: which-gfortran
+: /usr/local/gcc-11.2.0/bin/gfortran
+
+#+NAME: gfortran-version
+#+BEGIN_SRC bash :exports both :results output :cache yes
+  gfortran --version
+#+END_SRC
+
+#+RESULTS[46dd431657bfb0dc764135129a8af017f6e34bda]: gfortran-version
+: GNU Fortran (GCC) 11.2.0
+: Copyright (C) 2021 Free Software Foundation, Inc.
+: This is free software; see the source for copying conditions.  There is NO
+: warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+:
+
+#+NAME: which-mpirun
+#+BEGIN_SRC bash :exports both :results output :cache yes
+  which mpirun
+#+END_SRC
+
+#+RESULTS[e2c34cf3328c0219968bc93bb0812a2d86afe5b3]: which-mpirun
+: /usr/local/gcc-11.2.0/bin/mpirun
+
+#+NAME: mpirun-version
+#+BEGIN_SRC bash :exports both :results output :cache yes
+  mpirun --version
+#+END_SRC
+
+#+RESULTS[04c406c2f727a839d99e91e0453a53c84e7e6d5a]: mpirun-version
+: mpirun (Open MPI) 4.1.2
+:
+: Report bugs to http://www.open-mpi.org/community/help/
+
+* Co-array Fortran
+Co-array Fortran はFortranの言語仕様の一部に組込まれているが, gfortran のみでは使えない.
+この記事はCo-arrayで書かれたプログラムを gfortran により実行するためのメモである.
+Ubuntu20.04では =apt= を使う方法とソースからビルドする方法がある.
+=apt= を使う方法はインストールが楽だがコンパイルが面倒.
+ソースからビルドするとラッパースクリプトの =caf= と =cafrun= が手に入るためコンパイルは楽になる.
+* gfortranでCo-array Fortranを使う方法
+Co-array Fortranのコンパイルのテスト用ファイル.
+#+NAME: coarrays_test.f90
+#+BEGIN_SRC fortran :exports code
+  program coarrays_test
+    implicit none
+    integer :: my_image, n_images
+    my_image = this_image()
+    n_images = num_images()
+    print*, "I'm ", my_image, "/", n_images
+  end program coarrays_test
+#+END_SRC
+** apt を使う方法
+まずは =apt= で検索をかけてみる.
+#+NAME: apt-search-coarrays
+#+BEGIN_SRC bash :exports both :results output :cache yes
+  apt search coarrays
+#+END_SRC
+
+#+RESULTS[52f422a0ca5776ab6df5215cd116f50c6c58303a]: apt-search-coarrays
+#+begin_example
+ソート中...
+全文検索...
+libcaf-mpich-3/focal 2.8.0-1 amd64
+  Co-Array Fortran libraries  (MPICH)
+
+libcaf-openmpi-3/focal,now 2.8.0-1 amd64 [インストール済み、自動]
+  Co-Array Fortran libraries  (OpenMPI)
+
+libcoarrays-dev/focal,now 2.8.0-1 amd64 [インストール済み]
+  Co-Array Fortran libraries
+
+libcoarrays-mpich-dev/focal 2.8.0-1 amd64
+  Co-Array Fortran libraries for - development files (MPICH)
+
+libcoarrays-openmpi-dev/focal,now 2.8.0-1 amd64 [インストール済み]
+  Co-Array Fortran libraries  - development files (OpenMPI)
+
+#+end_example
+
+=mpich= と =openmpi= がある.
+=openmpi= を使うならば.
+#+NAME: apt-install-coarrays
+#+BEGIN_SRC bash :exports code
+  sudo apt install -y libcoarrays-openmpi-dev
+#+END_SRC
+
+実行するには必要なライブラリをリンクする必要があるが, =pkg-config= を使えば良い.
+インストールされた =.pc= ファイルを検索すると
+#+NAME: dpkg-L-coarrays
+#+BEGIN_SRC bash :exports results :results output :cache yes
+  dpkg -L libcoarrays-openmpi-dev | grep -e '\.pc$'
+#+END_SRC
+
+#+RESULTS[d84e1d588bc5d5e5250432dd383d896aab7d8c41]: dpkg-L-coarrays
+: /usr/lib/x86_64-linux-gnu/pkgconfig/caf-openmpi.pc
+: /usr/lib/x86_64-linux-gnu/open-coarrays/openmpi/pkgconfig/caf-openmpi.pc
+: /usr/lib/x86_64-linux-gnu/open-coarrays/openmpi/pkgconfig/caf.pc
+
+OpenMPIを使う場合は, =caf-openmpi.pc= を利用する.
+#+NAME: gfortran-compile-and-run
+#+BEGIN_SRC bash :exports both :results output :cache yes
+  gfortran -o coarrays_test.out -fcoarray=lib coarrays_test.f90 $(pkg-config --libs --cflags caf-openmpi)
+  mpirun -np 2 ./coarrays_test.out
+#+END_SRC
+
+#+RESULTS[e73fc0c002e49a92427bf6b04e741a5d978b6337]: gfortran-compile-and-run
+:  I'm            1 /           2
+:  I'm            2 /           2
+
+おそらく, =-lcaf_openmpi= だけで十分.
+#+NAME: gfortran-compile-and-run2
+#+BEGIN_SRC bash :exports both :results output :cache yes
+  gfortran -o coarrays_test.out -fcoarray=lib coarrays_test.f90 -lcaf_openmpi
+  mpirun -np 2 ./coarrays_test.out
+#+END_SRC
+
+#+RESULTS[2f6d784c1b7e5ece2cd011ac354e0ca9faee82a5]: gfortran-compile-and-run2
+:  I'm            1 /           2
+:  I'm            2 /           2
+
+** ソースからビルドする方法
+[[http://www.opencoarrays.org/]] の [[https://github.com/sourceryinstitute/OpenCoarrays/tree/master]] からソースコードをクローンする.
+#+NAME: clone-opencoarrays
+#+BEGIN_SRC bash :exports code
+  git clone https://github.com/sourceryinstitute/OpenCoarrays.git
+  cd OpenCoarrays/
+#+END_SRC
+cmakeを使ってビルドとインストールをする.
+#+NAME: build-commands
+#+BEGIN_SRC bash :exports code
+  FC=/usr/local/gcc-11.2.0/bin/gfortran cmake -B _build -DBUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local/gcc-11.2.0
+  cmake --build _build
+  cmake --build _build --target install
+#+END_SRC
+これでラッパースクリプトの =caf= と =cafrun= が =/usr/local/gcc-11.2.0= にインストールされる.
+FC や PREFIX を変えれば好きな場所にインストールできる.
+=caf= が何をラップしているかを知るためには
+#+NAME: caf-wrapper
+#+BEGIN_SRC bash :exports both :results output :cache yes
+  caf -w
+#+END_SRC
+
+#+RESULTS[2db4b45ab73ef5f3cdccbbc24691e74ca2550c00]: caf-wrapper
+: caf wraps /usr/local/gcc-11.2.0/bin/gfortran-11.2.0
+
+=caf= のversionを知るためには
+#+NAME: caf-version
+#+BEGIN_SRC bash :exports both :results output :cache yes
+  caf -v
+#+END_SRC
+
+#+RESULTS[5074e40176f89dd1ac7d6bfdfc7917810f5460fe]: caf-version
+#+begin_example
+
+OpenCoarrays Coarray Fortran Compiler Wrapper (caf version 2.9.2-13-g235167d)
+Copyright (C) 2015-2020 Sourcery Institute
+Copyright (C) 2015-2020 Sourcery, Inc.
+
+OpenCoarrays comes with NO WARRANTY, to the extent permitted by law.
+You may redistribute copies of OpenCoarrays under the terms of the
+BSD 3-Clause License.  For more information about these matters, see
+the file named LICENSE that is distributed with OpenCoarrays.
+
+#+end_example
+
+を実行する.
+#+NAME: caf-compile-and-run
+#+BEGIN_SRC bash :exports both :results output :cache yes
+  caf -o coarrays_test_caf.out coarrays_test.f90
+  cafrun -np 2 ./coarrays_test_caf.out
+#+END_SRC
+
+#+RESULTS[92f6a0c01af25c918785d1d6e768525cc4d29ca4]: caf-compile-and-run
+:  I'm            1 /           2
+:  I'm            2 /           2
+* 実行
+ソースコードはNAGのチュートリアルからダウンロード [[https://www.nag-j.co.jp/fortran/coarray/coarrayTutorial_3.html]].
+#+NAME: compile-prog-coarrays
+#+begin_src bash :exports code :cache yes
+  [ -f quad1.f90 ]    || wget https://www.nag-j.co.jp/fortran/coarray/code/quad1.f90
+  [ -f coquad1.f90 ]  || wget https://www.nag-j.co.jp/fortran/coarray/code/coquad1.f90
+  [ -f coarrays.f90 ] || wget https://www.nag-j.co.jp/fortran/coarray/code/coarrays.f90
+  gfortran -fcoarray=lib -o coarrays.out quad1.f90 coquad1.f90 coarrays.f90 -lcaf_openmpi
+  caf -o coarrays_caf.out quad1.f90 coquad1.f90 coarrays.f90
+#+end_src
+
+#+RESULTS[37ce27aaa7ef8f75c6c6c6db9d273b3bd32c191b]: compile-prog-coarrays
+
+** apt から
+#+name: mpirun-coarrays-1
+#+begin_src bash :exports both :results output :cache yes
+  mpirun -np 1 ./coarrays.out
+#+end_src
+
+#+RESULTS[e71bccf568f22f576cc96643785320cdc6260ab2]: mpirun-coarrays-1
+:  Calculated value:     0.90000000000031166
+:  True value (approx):  0.90000000000000002
+:  Relative error   3.4626622556920158E-013
+:  Time taken 9.620 seconds by 1 images, = 9.62 computing power
+
+#+name: mpirun-coarrays-4
+#+begin_src bash :exports both :results output :cache yes
+  mpirun -np 4 ./coarrays.out
+#+end_src
+
+#+RESULTS[9bde31e5f1a6b1cd00b01627baa4fef0e2915223]: mpirun-coarrays-4
+:  Calculated value:     0.90000000000022018
+:  True value (approx):  0.90000000000000002
+:  Relative error   2.4461913975907617E-013
+:  Time taken 2.742 seconds by 4 images, = 10.97 computing power
+
+** caf
+#+name: cafrun-coarrays-1
+#+begin_src bash :exports both :results output :cache yes
+  cafrun -np 1 ./coarrays_caf.out
+#+end_src
+
+#+RESULTS[0fc098f3a00aa1ad6a1c88e30293073ae4b13940]: cafrun-coarrays-1
+:  Calculated value:     0.90000000000031166
+:  True value (approx):  0.90000000000000002
+:  Relative error   3.4626622556920158E-013
+:  Time taken 9.626 seconds by 1 images, = 9.63 computing power
+
+#+name: cafrun-coarrays-4
+#+begin_src bash :exports both :results output :cache yes
+  cafrun -np 4 ./coarrays_caf.out
+#+end_src
+
+#+RESULTS[5ee3388626afafe459541c27cae52b85ad61ec5c]: cafrun-coarrays-4
+:  Calculated value:     0.90000000000022018
+:  True value (approx):  0.90000000000000002
+:  Relative error   2.4461913975907617E-013
+:  Time taken 2.644 seconds by 4 images, = 10.58 computing power
+
+** 速度の比較
+#+ATTR_LaTeX: :align c|cc
+|              |  time |   speedup |
+|--------------+-------+-----------|
+|--------------+-------+-----------|
+| mpirun -np 1 | 9.620 |         1 |
+| mpirun -np 4 | 2.742 | 3.5083880 |
+| cafrun -np 1 | 9.626 |         1 |
+| cafrun -np 4 | 2.644 | 3.6406959 |
+#+TBLFM: @3$3=@2$2/@3$2::@5$3=@4$2/@5$2
+* 結論
+どちらの方法でも速度は大して変わらない.
+おおよそコア数分のスピードアップをしている.
+
+ビルドの手間とコンパイルの手間を天秤にかけると, コンパイルが楽な =caf= を使った方が良いだろう.
+* 参考
+- OpenCoarrays
+
+  [[http://www.opencoarrays.org/]]
+
+  [[https://github.com/sourceryinstitute/OpenCoarrays/tree/master]]
+
+- NAGのチュートリアル
+
+  [[https://www.nag-j.co.jp/fortran/coarray/coarrayTutorial_3.html]]
