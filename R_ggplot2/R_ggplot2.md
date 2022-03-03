@@ -38,8 +38,9 @@
 
 ## 文書
 
-ファイル <https://github.com/osada-yum/examples> のR<sub>ggplot2</sub> Emacsのorg-babelに対応している.
+https://github.com/osada-yum/examples の `R_ggplot2/` ディレクトリにファイルがある.
 
+Emacsのorg文書はリテラルプログラミングに対応しているので, .orgのファイルを使うことで, この文書のサンプルを実行できる.
 
 <a id="orgec7b521"></a>
 
@@ -60,8 +61,12 @@
 
 # gnuplotから引っ越す
 
--   gnuplotは簡易的にデータを可視化するには取り回し易い. `gnuplot filename` でOK.
--   データの加工は面倒. できなくはない.
+-   gnuplotは簡易的にデータを可視化するには取り回し易い.
+
+    `plot "filename"` でプロットできる.
+-   データの加工は面倒.
+
+    できなくはないんだろうけど.
 
 
 <a id="org6f917c3"></a>
@@ -79,10 +84,7 @@
     `patchwork` (プロットを並べられる)とか
 
     `gganimate` (.gif作れる)とか
--   ggplot2単体ではプロットをマウスで動かせない.
-
-    `ggplotgui` (ブラウザ上でプロットを動かせる)とかを使えば可能.
--   マルチバイト文字が使える.
+-   ラベルとかに日本語が使える.
 
     gnuplot では使えない?
 
@@ -91,6 +93,9 @@
 
 ## R+ggplot2の欠点
 
+-   ggplot2単体ではプロットをマウスで動かせない.
+
+    `plotly` や `ggplotgui` (ブラウザ上でプロットを設定できる)とかを使えば可能.
 -   日本語の文書が少ない.
 
     とりあえず, \`\` `R ggplot2` '' とかで検索?
@@ -645,3 +650,12 @@ patchworkライブラリを使うとよい.
 https://cran.r-project.org/web/packages/patchwork/patchwork.pdf
 
 https://qiita.com/nozma/items/4512623bea296ccb74ba
+
+
+<a id="orgd1a7401"></a>
+
+## GIFアニメを作る.
+
+gganimateライブラリを使うとよい.
+
+https://gganimate.com/

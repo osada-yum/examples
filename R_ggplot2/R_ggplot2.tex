@@ -1,4 +1,4 @@
-% Created 2022-03-02 水 23:46
+% Created 2022-03-03 木 21:37
 % Intended LaTeX compiler: pdflatex
 \documentclass[lualatex,a4paper,12pt,report,ja=standard]{bxjsarticle}
 \usepackage{bm}
@@ -31,33 +31,35 @@
 \tableofcontents
 
 \section{はじめに}
-\label{sec:org789026b}
+\label{sec:org7836e97}
 \subsection{文書}
-\label{sec:orgd114d23}
-ファイル
-\url{https://github.com/osada-yum/examples} のR\textsubscript{ggplot2}
-Emacsのorg-babelに対応している.
+\label{sec:orgc1d148d}
+\url{https://github.com/osada-yum/examples} の \texttt{R\_ggplot2/} ディレクトリにファイルがある.
+
+Emacsのorg文書はリテラルプログラミングに対応しているので, .orgのファイルを使うことで, この文書のサンプルを実行できる.
 \subsection{実行環境}
-\label{sec:org848ad7a}
+\label{sec:org1d5f73d}
 \begin{itemize}
 \item Ubuntu 20.04
 \item org-9.5.2 on Emacs-28.0.50
 \end{itemize}
 \section{やりたいこと}
-\label{sec:orgd7c7dc3}
+\label{sec:org81f7460}
 \begin{itemize}
 \item gnuplot並に簡単にプロットをしたい.
 \end{itemize}
 \section{gnuplotから引っ越す}
-\label{sec:org1ba8283}
+\label{sec:orgfad38b7}
 \begin{itemize}
 \item gnuplotは簡易的にデータを可視化するには取り回し易い.
-\texttt{gnuplot filename} でOK.
+
+\texttt{plot "filename"} でプロットできる.
 \item データの加工は面倒.
-できなくはない.
+
+できなくはないんだろうけど.
 \end{itemize}
 \subsection{R+ggplot2の利点}
-\label{sec:org42bc43c}
+\label{sec:org5ce786a}
 \begin{itemize}
 \item Rの機能が使える.
 \begin{itemize}
@@ -73,29 +75,29 @@ Emacsのorg-babelに対応している.
 \texttt{patchwork} (プロットを並べられる)とか
 
 \texttt{gganimate} (.gif作れる)とか
-\item ggplot2単体ではプロットをマウスで動かせない.
-
-\texttt{ggplotgui} (ブラウザ上でプロットを動かせる)とかを使えば可能.
-\item マルチバイト文字が使える.
+\item ラベルとかに日本語が使える.
 
 gnuplot では使えない?
 \end{itemize}
 \subsection{R+ggplot2の欠点}
-\label{sec:orge9f3436}
+\label{sec:org25e9a35}
 \begin{itemize}
+\item ggplot2単体ではプロットをマウスで動かせない.
+
+\texttt{plotly} や  \texttt{ggplotgui} (ブラウザ上でプロットを設定できる)とかを使えば可能.
 \item 日本語の文書が少ない.
 
 とりあえず, `` \texttt{R ggplot2} '' とかで検索?
 \item \texttt{gnuplot} に比べると行数が増える.
 \end{itemize}
 \section{デモ}
-\label{sec:org8f6ea8e}
+\label{sec:org5e4fc7a}
 一部の画質が粗いのは, おそらくorg-babelで出力しているから.
 \mintinline[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{r}{ggsave()} 関数を使えば dpi を弄れるので問題なし.
 \subsection{ファイルをプロットしたい}
-\label{sec:org78eb7ab}
+\label{sec:orgc824ce9}
 \subsubsection{emacsのorg-babel用の設定}
-\label{sec:org377f943}
+\label{sec:orgd6647ea}
 \begin{minted}[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{common-lisp}
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -105,7 +107,7 @@ gnuplot では使えない?
 \end{minted}
 
 \subsubsection{ファイルの中身}
-\label{sec:org410f17c}
+\label{sec:org12c4a89}
 \texttt{sin.dat}
 \begin{minted}[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{bash}
 cat sin.dat
@@ -146,7 +148,7 @@ cat cos.dat
 \end{center}
 
 \subsubsection{gnuplotなら}
-\label{sec:org2457cfb}
+\label{sec:org3a6b51a}
 \begin{itemize}
 \item 凄い簡単.
 \item データを可視化したいだけなら, これだけでOK.
@@ -160,7 +162,7 @@ plot "sin.dat"
 \end{center}
 
 \subsubsection{R+ggplot2で愚直にプロット}
-\label{sec:org995a150}
+\label{sec:orgae127db}
 \begin{itemize}
 \item \texttt{ggplot2} をインストールする.
 \end{itemize}
@@ -221,10 +223,10 @@ plt
 \end{center}
 
 \subsubsection{gnuplotに似せる}
-\label{sec:orgc968bdf}
+\label{sec:org75630f7}
 \begin{enumerate}
 \item themeの設定
-\label{sec:org2808145}
+\label{sec:org137e353}
 \begin{minted}[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{r}
 plt_theme <- plt + theme_bw()
 plt_theme
@@ -235,7 +237,7 @@ plt_theme
 \end{center}
 
 \item breakの設定
-\label{sec:org7fc7844}
+\label{sec:orgc11fda0}
 
 (\texttt{gnuplot} でいうticks.)
 \begin{minted}[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{r}
@@ -250,7 +252,7 @@ plt_breaks
 \end{center}
 
 \item labelの設定
-\label{sec:orge2ea547}
+\label{sec:orgd894222}
 \begin{minted}[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{r}
 plt_label <- plt_breaks + xlab("x") + ylab("y")
 plt_label
@@ -261,7 +263,7 @@ plt_label
 \end{center}
 
 \item aesの中でshapeとかcolorを指定するとlegendが出る
-\label{sec:org7eb2bbc}
+\label{sec:org3516c09}
 
 \begin{itemize}
 \item \texttt{\%+\%} で既存の要素を置き換えられるらしい.
@@ -279,7 +281,7 @@ plt_legend
 \end{center}
 
 \item shapeとcolorを変える
-\label{sec:org2105af2}
+\label{sec:org239d685}
 \begin{minted}[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{r}
 plt_legend2 <- plt_legend +
   scale_shape_manual("functions", values = c(3)) +
@@ -292,7 +294,7 @@ plt_legend2
 \end{center}
 
 \item legendの位置を変更
-\label{sec:org0cb0059}
+\label{sec:org5935e3c}
 
 legendの左下(0.0, 0.0)を図の(0.1, 0.1)へ持っていく.
 \begin{minted}[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{r}
@@ -307,7 +309,7 @@ plt_legend_position
 \end{center}
 
 \item legendに囲みを変更
-\label{sec:orgcc82ee9}
+\label{sec:org636e37e}
 \begin{minted}[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{r}
 plt_legend_box <- plt_legend_position +
   theme(legend.background     = element_blank()
@@ -320,7 +322,7 @@ plt_legend_box
 \end{center}
 
 \item 文字を大きく, 色を黒に
-\label{sec:org386d13d}
+\label{sec:orgf7bb2aa}
 \begin{minted}[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{r}
 plt_text_prop <- plt_legend_box +
   theme(legend.text  = element_text(size = 20)
@@ -335,7 +337,7 @@ plt_text_prop
 \end{center}
 
 \item legendのタイトルとグリッドを消去する
-\label{sec:orge4ed6aa}
+\label{sec:orga2bb58c}
 \begin{minted}[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{r}
 plt_grid <- plt_text_prop +
   theme(legend.title = element_blank()
@@ -348,7 +350,7 @@ plt_grid
 \end{center}
 
 \item ticksを内側に変更する.
-\label{sec:org28eff1a}
+\label{sec:org444c544}
 
 ticksのテキストのマージンも変更する.
 \begin{minted}[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{r}
@@ -364,7 +366,7 @@ plt_ticks
 \end{center}
 
 \item アスペクト比を変更する
-\label{sec:org51186c7}
+\label{sec:org71d172d}
 \begin{minted}[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{r}
 plt_aspect <- plt_ticks +
   theme(aspect.ratio = 3/4)
@@ -376,7 +378,7 @@ plt_aspect
 \end{center}
 
 \item 比較
-\label{sec:org8a449ff}
+\label{sec:orge9d8121}
 
 \begin{itemize}
 \item 結構似ている.
@@ -387,9 +389,9 @@ plt_aspect
 \includegraphics[width=0.45\textwidth]{figure/sin_ggplot2_aspectratio.png}
 \end{enumerate}
 \subsection{ファイルに書き込む}
-\label{sec:org2257e73}
+\label{sec:org79cd4fc}
 \subsubsection{gnuplotなら}
-\label{sec:orgfcbdd5c}
+\label{sec:orgba06e6b}
 \begin{minted}[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{gnuplot}
 set size square
 set terminal png
@@ -401,7 +403,7 @@ plot "sin.dat" using 1:2 with points
 \includegraphics[width=0.8\textwidth]{sin_gnuplot_output.png}
 \end{center}
 \subsubsection{R+ggplot2}
-\label{sec:org822e8b0}
+\label{sec:orgd23584c}
 \begin{minted}[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{r}
 plt <- ggplot(data = d_sin) + geom_point(aes(x = V1, y = V2))
 ggsave(filename = "sin_ggplot2_output.png"
@@ -413,9 +415,9 @@ ggsave(filename = "sin_ggplot2_output.png"
 \includegraphics[width=0.8\textwidth]{sin_ggplot2_output.png}
 \end{center}
 \subsection{範囲を指定}
-\label{sec:orgfa94efe}
+\label{sec:orgff7fc7a}
 \subsubsection{gnuplotなら}
-\label{sec:orga07cc31}
+\label{sec:orgf7c76a3}
 \begin{minted}[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{gnuplot}
 set size square
 set xrange [0:11]
@@ -433,7 +435,7 @@ plot "sin.dat" using 1:2 with linespoints title "sin"
 \end{center}
 
 \subsubsection{R+ggplot2}
-\label{sec:orgd8b32ea}
+\label{sec:org2c54893}
 \begin{itemize}
 \item 行末に \texttt{+} を置くと行を跨げる.
 \item \texttt{geom\_point} と \texttt{geom\_line} を同時に使える.
@@ -478,9 +480,9 @@ plt_range
 \end{center}
 
 \subsection{複数ファイルをプロット}
-\label{sec:orgd751ea8}
+\label{sec:org1e91320}
 \subsubsection{gnuplot}
-\label{sec:orgbc94c58}
+\label{sec:org95c4bf0}
 \begin{minted}[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{gnuplot}
 set size square
 set xrange [0:11]
@@ -499,10 +501,10 @@ plot "sin.dat" using 1:2 with linespoints title "sin",\
 \end{center}
 
 \subsubsection{R+ggplot2}
-\label{sec:orgd247584}
+\label{sec:orgb03c048}
 \begin{enumerate}
 \item 愚直に
-\label{sec:org00a1e5a}
+\label{sec:org2cd057a}
 
 \begin{itemize}
 \item themeを使いまわすために, \texttt{mytheme} 変数に代入しておくことができる.
@@ -549,7 +551,7 @@ plt_multifile
 \end{center}
 
 \item data.frameの構造を変えてプロット
-\label{sec:org917cef1}
+\label{sec:orgaebb564}
 
 \begin{itemize}
 \item \texttt{data.frame} に新しい列に関数の種類を文字列で代入する.
@@ -614,7 +616,7 @@ plt_onedataframe
 \end{enumerate}
 
 \section{まとめ}
-\label{sec:orge31994b}
+\label{sec:orgd35d493}
 \begin{itemize}
 \item 基本的には \mintinline[frame=lines,framesep=2mm,linenos=true,baselinestretch=1.2,fontsize=\footnotesize,breaklines]{r}{ggplot(data = mydata)} に色々足していけばよい.
 
@@ -624,9 +626,9 @@ plt_onedataframe
 shape とか color とかも指定できる.
 \end{itemize}
 \section{もっと}
-\label{sec:orga69d9d6}
+\label{sec:org89b9bda}
 \subsection{参考URL}
-\label{sec:orgaeddc17}
+\label{sec:orga09ca65}
 \begin{itemize}
 \item ggplot2のマニュアル
 
@@ -639,7 +641,7 @@ matplotlib と ggplot2 との比較.
 \url{https://towardsdatascience.com/matplotlib-vs-ggplot2-c86dd35a9378}
 \end{itemize}
 \subsection{プロットをマウスとかで弄るには}
-\label{sec:org6077224}
+\label{sec:orga72beeb}
 gnuplotではプロットをマウスでぐりぐりできるが, ggplot2ではplotlyみたいなライブラリが必要.
 
 \url{https://plotly.com/r/}
@@ -652,10 +654,15 @@ ggplotguiみたいなライブラリを使えばブラウザ上でグリグリ�
 
 \url{https://note.com/tqwst408/n/n82d56c69a18e}
 \subsection{プロットを横とか縦に並べるには}
-\label{sec:orgc9eb46d}
+\label{sec:org021769c}
 patchworkライブラリを使うとよい.
 
 \url{https://cran.r-project.org/web/packages/patchwork/patchwork.pdf}
 
 \url{https://qiita.com/nozma/items/4512623bea296ccb74ba}
+\subsection{GIFアニメを作る.}
+\label{sec:org00b8c76}
+gganimateライブラリを使うとよい.
+
+\url{https://gganimate.com/}
 \end{document}

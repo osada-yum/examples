@@ -1,12 +1,12 @@
 #+TITLE: Correspondence between R+ggplot2 and gnuplot.
 #+AUTHOR: Osada Yuma
-#+options: num:4
+#+options: num:4 ^:{}
 #+LaTeX_header: \usepackage{minted}
 * はじめに
 ** 文書
-ファイル
-[[https://github.com/osada-yum/examples]] のR_ggplot2
-Emacsのorg-babelに対応している.
+[[https://github.com/osada-yum/examples]] の ~R_ggplot2/~ ディレクトリにファイルがある.
+
+Emacsのorg文書はリテラルプログラミングに対応しているので, .orgのファイルを使うことで, この文書のサンプルを実行できる.
 ** 実行環境
 - Ubuntu 20.04
 - org-9.5.2 on Emacs-28.0.50
@@ -14,9 +14,11 @@ Emacsのorg-babelに対応している.
 - gnuplot並に簡単にプロットをしたい.
 * gnuplotから引っ越す
 - gnuplotは簡易的にデータを可視化するには取り回し易い.
-  ~gnuplot filename~ でOK.
+
+  ~plot "filename"~ でプロットできる.
 - データの加工は面倒.
-  できなくはない.
+
+  できなくはないんだろうけど.
 ** R+ggplot2の利点
 - Rの機能が使える.
   - ファイルからデータを読み込んで加工してプロットするのが楽.
@@ -30,13 +32,13 @@ Emacsのorg-babelに対応している.
   ~patchwork~ (プロットを並べられる)とか
 
   ~gganimate~ (.gif作れる)とか
-- ggplot2単体ではプロットをマウスで動かせない.
-
-  ~ggplotgui~ (ブラウザ上でプロットを動かせる)とかを使えば可能.
-- マルチバイト文字が使える.
+- ラベルとかに日本語が使える.
 
   gnuplot では使えない?
 ** R+ggplot2の欠点
+- ggplot2単体ではプロットをマウスで動かせない.
+
+  ~plotly~ や  ~ggplotgui~ (ブラウザ上でプロットを設定できる)とかを使えば可能.
 - 日本語の文書が少ない.
 
   とりあえず, `` =R ggplot2= '' とかで検索?
@@ -566,3 +568,7 @@ patchworkライブラリを使うとよい.
 [[https://cran.r-project.org/web/packages/patchwork/patchwork.pdf]]
 
 [[https://qiita.com/nozma/items/4512623bea296ccb74ba]]
+** GIFアニメを作る.
+gganimateライブラリを使うとよい.
+
+[[https://gganimate.com/]]
