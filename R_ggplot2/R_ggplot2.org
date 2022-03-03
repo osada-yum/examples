@@ -4,12 +4,15 @@
 #+LaTeX_header: \usepackage{minted}
 * はじめに
 ** 文書
-[[https://github.com/osada-yum/examples]] の ~R_ggplot2/~ ディレクトリにファイルがある.
+ファイルは
+[[https://github.com/osada-yum/examples]] の ~R_ggplot2/~ ディレクトリにある.
 
 Emacsのorg文書はリテラルプログラミングに対応しているので, .orgのファイルを使うことで, この文書のサンプルを実行できる.
 ** 実行環境
 - Ubuntu 20.04
 - org-9.5.2 on Emacs-28.0.50
+- gnuplot 5.2 patchlevel 8
+- R version 3.6.3 (2020-02-29)
 * やりたいこと
 - gnuplot並に簡単にプロットをしたい.
 * gnuplotから引っ越す

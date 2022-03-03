@@ -1,36 +1,3 @@
-- [はじめに](#org89d1877)
-  - [文書](#org0c32372)
-  - [実行環境](#orgec7b521)
-- [やりたいこと](#org90b1e36)
-- [gnuplotから引っ越す](#org31221d2)
-  - [R+ggplot2の利点](#org6f917c3)
-  - [R+ggplot2の欠点](#org9f558d0)
-- [デモ](#orgece263d)
-  - [ファイルをプロットしたい](#orgdb445ac)
-    - [emacsのorg-babel用の設定](#orgf8b4597)
-    - [ファイルの中身](#orgb1d68aa)
-    - [gnuplotなら](#org6ad762b)
-    - [R+ggplot2で愚直にプロット](#orge793a9e)
-    - [gnuplotに似せる](#orge0d668f)
-  - [ファイルに書き込む](#orgde60d9c)
-    - [gnuplotなら](#org934a062)
-    - [R+ggplot2](#org07858ed)
-  - [範囲を指定](#orga8202ae)
-    - [gnuplotなら](#orgb217901)
-    - [R+ggplot2](#orgd453860)
-  - [複数ファイルをプロット](#org8c3ebdb)
-    - [gnuplot](#org05ebeb8)
-    - [R+ggplot2](#org63a8a18)
-- [まとめ](#orgcf78290)
-- [もっと](#orgdc3d650)
-  - [参考URL](#org97e6354)
-  - [プロットをマウスとかで弄るには](#org0ec5a44)
-  - [プロットを横とか縦に並べるには](#orgd169a79)
-
-
-
-<a id="org89d1877"></a>
-
 # はじめに
 
 
@@ -38,9 +5,9 @@
 
 ## 文書
 
-https://github.com/osada-yum/examples の `R_ggplot2/` ディレクトリにファイルがある.
+ファイルは <https://github.com/osada-yum/examples> の `R_ggplot2/` ディレクトリにある.
 
-Emacsのorg文書はリテラルプログラミングに対応しているので, .orgのファイルを使うことで, この文書のサンプルを実行できる.
+Emacsのorg文書はリテラルプログラミングに対応しているので, .org のファイルを使うことで, この文書のサンプルを実行できる.
 
 <a id="orgec7b521"></a>
 
@@ -48,6 +15,8 @@ Emacsのorg文書はリテラルプログラミングに対応しているので
 
 -   Ubuntu 20.04
 -   org-9.5.2 on Emacs-28.0.50
+-   gnuplot 5.2 patchlevel 8
+-   R version 3.6.3 (2020-02-29)
 
 
 <a id="org90b1e36"></a>
@@ -137,6 +106,8 @@ Emacsのorg文書はリテラルプログラミングに対応しているので
 cat sin.dat
 ```
 
+|    |             |
+| -- | ----------- |
 | 1  | 0.3271947   |
 | 2  | 0.6183698   |
 | 3  | 0.84147096  |
@@ -154,6 +125,8 @@ cat sin.dat
 cat cos.dat
 ```
 
+|   |            |
+| -- | ---------- |
 | 1 | 0.9950042  |
 | 2 | 0.9800666  |
 | 3 | 0.9553365  |
@@ -176,8 +149,8 @@ cat cos.dat
 plot "sin.dat"
 ```
 
-![img](figure/sin_gnuplot.png)
-
+<!-- ![img](figure/sin_gnuplot.png) -->
+![sin_gnuplot.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/175db450-5a9e-d10d-565f-30361309e758.png)
 
 <a id="orge793a9e"></a>
 
@@ -226,148 +199,161 @@ plt <- ggplot(data = d_sin) + geom_point(aes(x = V1, y = V2))
 plt
 ```
 
-![img](figure/sin_ggplot2.png)
-
+<!-- ![img](figure/sin_ggplot2.png) -->
+![sin_ggplot2.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/9d75d0a1-6db1-f169-fdb5-14919b3a09e8.png)
 
 <a id="orge0d668f"></a>
 
 ### gnuplotに似せる
 
-1.  themeの設定
+#### themeの設定
 
-    ```R
-    plt_theme <- plt + theme_bw()
-    plt_theme
-    ```
+```R
+plt_theme <- plt + theme_bw()
+plt_theme
+```
 
-    ![img](figure/sin_ggplot2_theme.png)
+<!-- ![img](figure/sin_ggplot2_theme.png) -->
+![sin_ggplot2_theme.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/cb1d51ee-a87f-f802-b91a-0f54f0dc95ff.png)
 
-2.  breakの設定
+#### breakの設定
 
-    (`gnuplot` でいうticks.)
+(`gnuplot` でいうticks.)
 
-    ```R
-    plt_breaks <- plt_theme +
-      scale_x_continuous(breaks = seq(from = 1.0, to = 10.0, by = 1.0)) +
-      scale_y_continuous(breaks = seq(from = -0.2, to = 1.0, by = 0.2))
-    plt_breaks
-    ```
+```R
+plt_breaks <- plt_theme +
+  scale_x_continuous(breaks = seq(from = 1.0, to = 10.0, by = 1.0)) +
+  scale_y_continuous(breaks = seq(from = -0.2, to = 1.0, by = 0.2))
+plt_breaks
+```
 
-    ![img](figure/sin_ggplot2_breaks.png)
+<!-- ![img](figure/sin_ggplot2_breaks.png) -->
+![sin_ggplot2_breaks.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/d3386285-ca19-a418-2e8c-70b1cccb089b.png)
 
-3.  labelの設定
+#### labelの設定
 
-    ```R
-    plt_label <- plt_breaks + xlab("x") + ylab("y")
-    plt_label
-    ```
+```R
+plt_label <- plt_breaks + xlab("x") + ylab("y")
+plt_label
+```
 
-    ![img](figure/sin_ggplot2_label.png)
+<!-- ![img](figure/sin_ggplot2_label.png) -->
+![sin_ggplot2_label.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/1107fa00-0b0d-d1d0-4363-070f954b0956.png)
 
-4.  aesの中でshapeとかcolorを指定するとlegendが出る
+#### aesの中でshapeとかcolorを指定するとlegendが出る
 
-    -   `%+%` で既存の要素を置き換えられるらしい.
+-   `%+%` で既存の要素を置き換えられるらしい.
 
-    ```R
-    plt_legend <- plt_label %+%
-      aes(shape = "サイン", color = "サイン")
-    plt_legend
-    ```
+```R
+plt_legend <- plt_label %+%
+  aes(shape = "サイン", color = "サイン")
+plt_legend
+```
 
-    ![img](figure/sin_ggplot2_legend.png)
+<!-- ![img](figure/sin_ggplot2_legend.png) -->
+![sin_ggplot2_legend.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/10db6973-31e0-fbf6-ddd1-37f36661317e.png)
 
-5.  shapeとcolorを変える
+#### shapeとcolorを変える
 
-    ```R
-    plt_legend2 <- plt_legend +
-      scale_shape_manual("functions", values = c(3)) +
-      scale_color_manual("functions", values = c("#990066"))
-    plt_legend2
-    ```
+```R
+plt_legend2 <- plt_legend +
+  scale_shape_manual("functions", values = c(3)) +
+  scale_color_manual("functions", values = c("#990066"))
+plt_legend2
+```
 
-    ![img](figure/sin_ggplot2_legend2.png)
+<!-- ![img](figure/sin_ggplot2_legend2.png) -->
+![sin_ggplot2_legend2.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/0a58313c-679c-402b-bbd8-47c68946c303.png)
 
-6.  legendの位置を変更
+#### legendの位置を変更
 
-    legendの左下(0.0, 0.0)を図の(0.1, 0.1)へ持っていく.
+legendの左下(0.0, 0.0)を図の(0.1, 0.1)へ持っていく.
 
-    ```R
-    plt_legend_position <- plt_legend2 +
-      theme(legend.justification = c(0.0, 0.0)
-          , legend.position      = c(0.1, 0.1))
-    plt_legend_position
-    ```
+```R
+plt_legend_position <- plt_legend2 +
+  theme(legend.justification = c(0.0, 0.0)
+      , legend.position      = c(0.1, 0.1))
+plt_legend_position
+```
 
-    ![img](figure/sin_ggplot2_legend_position.png)
+<!-- ![img](figure/sin_ggplot2_legend_position.png) -->
+![sin_ggplot2_legend_position.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/ca8970cc-8801-9b3f-5a36-02a8ea929e57.png)
 
-7.  legendに囲みを変更
 
-    ```R
-    plt_legend_box <- plt_legend_position +
-      theme(legend.background     = element_blank()
-          , legend.box.background = element_rect(color = "black"))
-    plt_legend_box
-    ```
+#### legendに囲みを変更
 
-    ![img](figure/sin_ggplot2_legend_box.png)
+```R
+plt_legend_box <- plt_legend_position +
+  theme(legend.background     = element_blank()
+      , legend.box.background = element_rect(color = "black"))
+plt_legend_box
+```
 
-8.  文字を大きく, 色を黒に
+<!-- ![img](figure/sin_ggplot2_legend_box.png) -->
+![sin_ggplot2_legend_box.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/b1cc5e2f-5183-b327-b53c-dece0e07d46d.png)
 
-    ```R
-    plt_text_prop <- plt_legend_box +
-      theme(legend.text  = element_text(size = 20)
-          , legend.title = element_text(size = 20)
-          , axis.text  = element_text(size = 20, color = "black")
-          , axis.title = element_text(size = 24))
-    plt_text_prop
-    ```
+#### 文字を大きく, 色を黒に
 
-    ![img](figure/sin_ggplot2_text_prop.png)
+```R
+plt_text_prop <- plt_legend_box +
+  theme(legend.text  = element_text(size = 20)
+      , legend.title = element_text(size = 20)
+      , axis.text  = element_text(size = 20, color = "black")
+      , axis.title = element_text(size = 24))
+plt_text_prop
+```
 
-9.  legendのタイトルとグリッドを消去する
+<!-- ![img](figure/sin_ggplot2_text_prop.png) -->
+![sin_ggplot2_text_prop.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/6025e789-19c7-0fcc-4f0d-21e06d49ea75.png)
 
-    ```R
-    plt_grid <- plt_text_prop +
-      theme(legend.title = element_blank()
-          , panel.grid = element_blank())
-    plt_grid
-    ```
+#### legendのタイトルとグリッドを消去する
 
-    ![img](figure/sin_ggplot2_grid.png)
+```R
+plt_grid <- plt_text_prop +
+  theme(legend.title = element_blank()
+      , panel.grid = element_blank())
+plt_grid
+```
 
-10. ticksを内側に変更する.
+<!-- ![img](figure/sin_ggplot2_grid.png) -->
+![sin_ggplot2_grid.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/5664332f-2f2a-5037-ed51-f1d60f1f7eb6.png)
 
-    ticksのテキストのマージンも変更する.
+#### ticksを内側に変更する.
 
-    ```R
-    plt_ticks <- plt_grid +
-      theme(axis.text.x  = element_text(margin = margin(t = 0.5, unit = "cm"))
-          , axis.text.y  = element_text(margin = margin(r = 0.5, unit = "cm"))
-          , axis.ticks.length=unit(-0.25, "cm"))
-    plt_ticks
-    ```
+ticksのテキストのマージンも変更する.
 
-    ![img](figure/sin_ggplot2_ticks.png)
+```R
+plt_ticks <- plt_grid +
+  theme(axis.text.x  = element_text(margin = margin(t = 0.5, unit = "cm"))
+      , axis.text.y  = element_text(margin = margin(r = 0.5, unit = "cm"))
+      , axis.ticks.length=unit(-0.25, "cm"))
+plt_ticks
+```
 
-11. アスペクト比を変更する
+<!-- ![img](figure/sin_ggplot2_ticks.png) -->
+![sin_ggplot2_ticks.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/2e90d846-8cf4-5aea-51ca-516b034d6ebe.png)
 
-    ```R
-    plt_aspect <- plt_ticks +
-      theme(aspect.ratio = 3/4)
-    plt_aspect
-    ```
+#### アスペクト比を変更する
 
-    ![img](figure/sin_ggplot2_aspectratio.png)
+```R
+plt_aspect <- plt_ticks +
+  theme(aspect.ratio = 3/4)
+plt_aspect
+```
 
-12. 比較
+<!-- ![img](figure/sin_ggplot2_aspectratio.png) -->
+![sin_ggplot2_aspectratio.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/013d99d1-63c9-3c2f-68b5-7d25b803330a.png)
 
-    -   結構似ている.
-    -   ここまでする必要はないが, 色々自由に設定できる.
+#### 比較
 
-    ![img](figure/sin_gnuplot.png)
+-   結構似ている.
+-   ここまでする必要はないが, 色々自由に設定できる.
 
-    ![img](figure/sin_ggplot2_aspectratio.png)
+<!-- ![img](figure/sin_gnuplot.png) -->
+![sin_gnuplot.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/175db450-5a9e-d10d-565f-30361309e758.png)
 
+<!-- ![img](figure/sin_ggplot2_aspectratio.png) -->
+![sin_ggplot2_aspectratio.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/013d99d1-63c9-3c2f-68b5-7d25b803330a.png)
 
 <a id="orgde60d9c"></a>
 
@@ -385,8 +371,8 @@ set output 'sin_gnuplot_output.png'
 plot "sin.dat" using 1:2 with points
 ```
 
-![img](sin_gnuplot_output.png)
-
+<!-- ![img](sin_gnuplot_output.png) -->
+![sin_gnuplot_output.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/69c481b0-5cd7-c3d9-e1e0-79a49ea4ae4b.png)
 
 <a id="org07858ed"></a>
 
@@ -399,8 +385,8 @@ ggsave(filename = "sin_ggplot2_output.png"
      , width = 7, height = 7)
 ```
 
-![img](sin_ggplot2_output.png)
-
+<!-- ![img](sin_ggplot2_output.png) -->
+![sin_ggplot2_output.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/63c04383-9811-c8b3-a4ac-9f2d4bd0835b.png)
 
 <a id="orga8202ae"></a>
 
@@ -423,8 +409,8 @@ set key left bottom
 plot "sin.dat" using 1:2 with linespoints title "sin"
 ```
 
-![img](figure/sin_gnuplot_range.png)
-
+<!-- ![img](figure/sin_gnuplot_range.png) -->
+![sin_gnuplot_range.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/5cff8d97-9fdb-07ba-5380-a1fee2c7f861.png)
 
 <a id="orgd453860"></a>
 
@@ -462,8 +448,8 @@ plt_range <- ggplot(data = d_sin, aes(x = V1, y = V2, shape = "sin", color = "si
 plt_range
 ```
 
-![img](figure/sin_ggplot2_range.png)
-
+<!-- ![img](figure/sin_ggplot2_range.png) -->
+![sin_ggplot2_range.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/4f644446-b574-1e20-d227-18ff2dfaecab.png)
 
 <a id="org8c3ebdb"></a>
 
@@ -487,69 +473,70 @@ plot "sin.dat" using 1:2 with linespoints title "sin",\
      "cos.dat" using 1:2 with linespoints title "cos"
 ```
 
-![img](figure/sincos_gnuplot_multifile.png)
-
+<!-- ![img](figure/sincos_gnuplot_multifile.png) -->
+![sincos_gnuplot_multifile.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/64f5f629-4009-2174-25db-0e41a8ac859e.png)
 
 <a id="org63a8a18"></a>
 
 ### R+ggplot2
 
-1.  愚直に
+#### 愚直に
 
-    -   themeを使いまわすために, `mytheme` 変数に代入しておくことができる.
+-   themeを使いまわすために, `mytheme` 変数に代入しておくことができる.
 
-        xとyのscaleも使いまわす.
+    xとyのscaleも使いまわす.
 
-    ```R
-    d_cos <- read.table("cos.dat", header = F)
+```R
+d_cos <- read.table("cos.dat", header = F)
 
-    mytheme <-
-      theme(axis.text  = element_text(size = 20, color = "black")
-          , axis.title = element_text(size = 20)
-          , legend.text  = element_text(size = 20)
-          , legend.title = element_blank()
-          , legend.justification = c(0.0, 0.0)
-          , legend.position      = c(0.05, 0.05)
-          , panel.grid = element_blank()
-          , axis.ticks.length = unit(-0.25, "cm")
-          , axis.text.x       = element_text(margin = margin(t = 0.5, unit = "cm"))
-          , axis.text.y       = element_text(margin = margin(r = 0.5, unit = "cm")))
+mytheme <-
+  theme(axis.text  = element_text(size = 20, color = "black")
+      , axis.title = element_text(size = 20)
+      , legend.text  = element_text(size = 20)
+      , legend.title = element_blank()
+      , legend.justification = c(0.0, 0.0)
+      , legend.position      = c(0.05, 0.05)
+      , panel.grid = element_blank()
+      , axis.ticks.length = unit(-0.25, "cm")
+      , axis.text.x       = element_text(margin = margin(t = 0.5, unit = "cm"))
+      , axis.text.y       = element_text(margin = margin(r = 0.5, unit = "cm")))
 
-    my_x_scales <-
-      scale_x_continuous(breaks = seq(from = 1.0 , to = 11.0, by = 2.0)
-                       , limits = c(0, 11))
-    my_y_scales <-
-      scale_y_continuous(breaks = seq(from = -1.0, to = 1.0 , by = 0.25)
-                       , limits = c(-1.0, 1.0))
+my_x_scales <-
+  scale_x_continuous(breaks = seq(from = 1.0 , to = 11.0, by = 2.0)
+                   , limits = c(0, 11))
+my_y_scales <-
+  scale_y_continuous(breaks = seq(from = -1.0, to = 1.0 , by = 0.25)
+                   , limits = c(-1.0, 1.0))
 
-    plt_multifile <- ggplot() +
-      geom_point(data = d_sin, aes(x = V1, y = V2, shape = "sin", color = "sin")) +
-      geom_line(data = d_sin, aes(x = V1, y = V2, shape = "sin", color = "sin")) +
-      geom_point(data = d_cos, aes(x = V1, y = V2, shape = "cos", color = "cos")) +
-      geom_line(data = d_cos, aes(x = V1, y = V2, shape = "cos", color = "cos")) +
-      my_x_scales + my_y_scales +
-      scale_shape_manual("functions", values = c(3:4)) +
-      scale_color_manual("functions", values = c("#990066", "#009900")) +
-      xlab("x") + ylab("y") +
-      theme_bw() + mytheme
-    plt_multifile
-    ```
+plt_multifile <- ggplot() +
+  geom_point(data = d_sin, aes(x = V1, y = V2, shape = "sin", color = "sin")) +
+  geom_line(data = d_sin, aes(x = V1, y = V2, shape = "sin", color = "sin")) +
+  geom_point(data = d_cos, aes(x = V1, y = V2, shape = "cos", color = "cos")) +
+  geom_line(data = d_cos, aes(x = V1, y = V2, shape = "cos", color = "cos")) +
+  my_x_scales + my_y_scales +
+  scale_shape_manual("functions", values = c(3:4)) +
+  scale_color_manual("functions", values = c("#990066", "#009900")) +
+  xlab("x") + ylab("y") +
+  theme_bw() + mytheme
+plt_multifile
+```
 
-    ![img](figure/sincos_ggplot2_multifile.png)
+<!-- ![img](figure/sincos_ggplot2_multifile.png) -->
+![sincos_ggplot2_multifile.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/7b913208-4dff-901b-4d5b-3e1953ea4e66.png)
 
-2.  data.frameの構造を変えてプロット
+#### data.frameの構造を変えてプロット
 
-    -   `data.frame` に新しい列に関数の種類を文字列で代入する.
-    -   `rbind` で2つを合体させる.
+-   `data.frame` に新しい列に関数の種類を文字列で代入する.
+-   `rbind` で2つを合体させる.
 
-    ```R
-    d_sin2 <- d_sin
-    d_cos2 <- d_cos
-    d_sin2$func <- "sin"
-    d_cos2$func <- "cos"
-    d_sincos <- rbind(d_sin2, d_cos2)
-    d_sincos
-    ```
+```R
+d_sin2 <- d_sin
+d_cos2 <- d_cos
+d_sin2$func <- "sin"
+d_cos2$func <- "cos"
+d_sincos <- rbind(d_sin2, d_cos2)
+d_sincos
+```
 
 | V1 | V2         | func |
 |--- |---------- |---- |
@@ -573,24 +560,24 @@ plot "sin.dat" using 1:2 with linespoints title "sin",\
 | 8  | 0.6967067  | cos  |
 | 9  | 0.6216100  | cos  |
 
-    -   `shape` と `color` に `func` を指定する.
+-   `shape` と `color` に `func` を指定する.
 
-        `"sin"` と `"cos"` で分別する.
+    `"sin"` と `"cos"` で分別する.
 
-    ```R
-    plt_onedataframe <- ggplot(data = d_sincos
-                             , aes(x = V1, y = V2, shape = func, color = func)) +
-      geom_point() + geom_line() +
-      my_x_scales + my_y_scales +
-      scale_shape_manual("functions", values = c(3:4)) +
-      scale_color_manual("functions", values = c("#990066", "#009900")) +
-      xlab("x") + ylab("y") +
-      theme_bw() + mytheme
-    plt_onedataframe
-    ```
+```R
+plt_onedataframe <- ggplot(data = d_sincos
+                         , aes(x = V1, y = V2, shape = func, color = func)) +
+  geom_point() + geom_line() +
+  my_x_scales + my_y_scales +
+  scale_shape_manual("functions", values = c(3:4)) +
+  scale_color_manual("functions", values = c("#990066", "#009900")) +
+  xlab("x") + ylab("y") +
+  theme_bw() + mytheme
+plt_onedataframe
+```
 
-    ![img](figure/sincos_ggplot2_onedataframe.png)
-
+<!-- ![img](figure/sincos_ggplot2_onedataframe.png) -->
+![sincos_ggplot2_onedataframe.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2296800/dc2ab423-8860-9231-c10e-2d117721fa9c.png)
 
 <a id="orgcf78290"></a>
 
