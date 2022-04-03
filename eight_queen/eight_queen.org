@@ -10,9 +10,9 @@ https://ja.wikipedia.org/wiki/%E3%82%A8%E3%82%A4%E3%83%88%E3%83%BB%E3%82%AF%E3%8
 * Fortranでの実装
 カモノハシ本のnクイーンのアルゴリズムをそのまま実装した.
 ** module
-src_fortran[:exports code]{neighbor}ポインタに左のクイーンを指させる.
-src_fortran[:exports code]{find_sol}関数でオブジェクト同士の通信で左のやつに取られないような位置へ移動する.
-チェス盤の大きさは src_fortran[:exports code]{max_row}と src_fortran[:exports code]{queen_t}オブジェクトの数で決まる.
+- src_fortran[:exports code]{neighbor}ポインタに左のクイーンを指させる.
+- src_fortran[:exports code]{find_sol}関数でオブジェクト同士の通信で左のやつに取られないような位置へ移動する.
+- チェス盤の大きさは src_fortran[:exports code]{max_row}と src_fortran[:exports code]{queen_t}オブジェクトの数で決まる.
 #+begin_src fortran :exports code
   module queen_m
     use, intrinsic :: iso_fortran_env
@@ -129,9 +129,8 @@ src_fortran[:exports code]{find_sol}関数でオブジェクト同士の通信�
   end module queen_m
 #+end_src
 ** 本体
-10x10のチェス盤にクイーンを置いた.
-Fortranには new 演算子みたいなものが(多分)なくて, 変数に新しいオブジェクトを代入してもアドレスが変わらないっぽい?
-なので, src_fortran[:exports code]{queen_t} オブジェクトを配列で宣言した.
+- 10x10のチェス盤にクイーンを置いた.
+- Fortranには new 演算子みたいなものが(多分)なくて, 変数に新しいオブジェクトを代入してもアドレスが変わらないっぽい(?)ので, src_fortran[:exports code]{queen_t} オブジェクトを配列で宣言した.
 #+begin_src fortran :exports code
   program find_sol
     use, intrinsic :: iso_fortran_env
