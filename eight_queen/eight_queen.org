@@ -8,11 +8,13 @@
 https://ja.wikipedia.org/wiki/%E3%82%A8%E3%82%A4%E3%83%88%E3%83%BB%E3%82%AF%E3%82%A4%E3%83%BC%E3%83%B3
 
 * Fortranでの実装
-カモノハシ本のnクイーンのアルゴリズムをそのまま実装した.
+カモノハシ本のnクイーンのアルゴリズムを参考にして, Fortranで実装した.
 ** module
 - src_fortran[:exports code]{neighbor}ポインタに左のクイーンを指させる.
 - src_fortran[:exports code]{find_sol}関数でオブジェクト同士の通信で左のやつに取られないような位置へ移動する.
 - チェス盤の大きさは src_fortran[:exports code]{max_row}と src_fortran[:exports code]{queen_t}オブジェクトの数で決まる.
+- src_fortran[:exports code]{null()}を引数として渡せないっぽいのでイニシャライザ関数を2つ用意している.
+- Fortranでは src_fortran[:exports code]{recursive}を付けないと再帰関数を定義できない.
 #+begin_src fortran :exports code
   module queen_m
     use, intrinsic :: iso_fortran_env
@@ -131,6 +133,7 @@ https://ja.wikipedia.org/wiki/%E3%82%A8%E3%82%A4%E3%83%88%E3%83%BB%E3%82%AF%E3%8
 ** 本体
 - 10x10のチェス盤にクイーンを置いた.
 - Fortranには new 演算子みたいなものが(多分)なくて, 変数に新しいオブジェクトを代入してもアドレスが変わらないっぽい(?)ので, src_fortran[:exports code]{queen_t} オブジェクトを配列で宣言した.
+- 関数の返り値は src_fortran[:exports code]{can_find}変数で受ける必要がある.
 #+begin_src fortran :exports code
   program find_sol
     use, intrinsic :: iso_fortran_env
