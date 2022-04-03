@@ -146,7 +146,7 @@ program find_sol
   logical            :: can_find
   type(queen_t)      :: queen(num_queen)
 
-  queen(1) = queen_t(i, num_queen)
+  queen(1) = queen_t(1, num_queen)
   do i = 2, num_queen
      queen(i) = queen_t(i, num_queen, queen(i-1))
      can_find = queen(i)%find_solution()
