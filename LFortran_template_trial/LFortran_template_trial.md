@@ -1,31 +1,10 @@
-- [目的](#orgf2132a2)
-- [LFortranとテンプレート](#org520e304)
-- [実行環境](#orgd053842)
-- [モノイド](#orga0a9d98)
-  - [OOPによるモノイド](#orgd74e1a6)
-  - [templateによるモノイド](#orgceebda4)
-- [ソート](#org9f069ec)
-  - [template を用いたバブルソート](#org543e49b)
-- [更なる発展&#x2026;?](#org5f6436d)
-- [参考](#org26b3ba2)
-
-
-
-<a id="orgf2132a2"></a>
-
 # 目的
 
 実験的な機能を使ってみよう!
 
-
-<a id="org520e304"></a>
-
 # LFortranとテンプレート
 
 `Fortran` の新しい規格に追加を検討されている機能として ジェネリックだのテンプレートだのというものがあるらしい.
-
-
-<a id="orgd053842"></a>
 
 # 実行環境
 
@@ -34,31 +13,25 @@
 
 で実行した.
 
-
-<a id="orga0a9d98"></a>
-
 # モノイド
 
 `template` 利点として, モノイドを定義することが簡単になる事例を紹介する.
 
 -   モノイドとは? (参考 <https://ja.wikipedia.org/wiki/%E3%83%A2%E3%83%8E%E3%82%A4%E3%83%89>)
-    
+
     ある集合 `S` と 単位元 `e` と結合則を満たす集合 `S` での2項演算子 `op` の組 (`S`, `e`, `op`)である(という説明で良いのだろうか?). 例としては, 整数全体の集合を `N` として
-    
+
     -   (`N`, 0, `+`)
     -   (`N`, 1, `*`)
-    
+
     はモノイドである. また, 32ビット整数全体の集合を `Int` として
-    
+
     -   (`Int`, 2147483647, `min`)
     -   (`Int`, -2147483648, `max`)
-    
+
     もモノイドである.
 
 では, `Fortran` でモノイドを再現したいときはどうすればよいだろうか? `Fortran` では引数の型が違う場合には, 異なる関数に同じ名前を付けることができるが, 上記のモノイドでは引数の型で区別をすることができない. しかし, 以下の2通りの方法でなら, モノイドを実装することができる. OOPでは継承を利用して単位元メソッドと演算子メソッドを抽象クラスからオーバーライドする. 一方で, (LFortranの実験的な) `template` 機能を使うことで, 新しいクラスの必要なしでモノイドを実装することができる.
-
-
-<a id="orgd74e1a6"></a>
 
 ## OOPによるモノイド
 
@@ -306,9 +279,6 @@ mconcat min:       1
 mconcat max:      10
 ```
 
-
-<a id="orgceebda4"></a>
-
 ## templateによるモノイド
 
 `template` を利用してモノイドの単位元を返す関数とモノイド演算をする関数(のインターフェース)を定義する. 実装は `Haskell` の `Monoid` 型クラスを参考にした. `mappend` が2項演算で `mempty` が単位元を返す関数である. 特徴は以下の通り.
@@ -460,15 +430,9 @@ mconcat_min:  1
 mconcat_max:  10
 ```
 
-
-<a id="org9f069ec"></a>
-
 # ソート
 
 `template` を使うとOOPのクラスよりも楽にモノイドを実装できることがわかった. `Haskell` の型クラスに習えば, モノイドに逆元を加えて群を実装することや, 順序関係が定義されている型の配列に対してソートを実装することが楽になるかもしれない.
-
-
-<a id="org543e49b"></a>
 
 ## template を用いたバブルソート
 
@@ -600,36 +564,30 @@ sorted arr in descending order:
 1
 ```
 
-
-<a id="org5f6436d"></a>
-
 # 更なる発展&#x2026;?
 
 `template` を使うとOOPのクラスよりも楽にモノイドを実装できることがわかった. `Haskell` の型クラスに習えば, モノイドに逆元を加えて群を実装することや, 順序関係が定義されている型の配列に対してソートを実装することが楽になるかもしれない.
-
-
-<a id="org26b3ba2"></a>
 
 # 参考
 
 -   LFortranテンプレートの機能があることは, `Fortran勉強会.f13` で知った.
 
-<https://fortran-jp.org/usergroup/usergroup.html>
+https://fortran-jp.org/usergroup/usergroup.html
 
 -   LFortranのサイト
 
-<https://lfortran.org/>
+https://lfortran.org/
 
-<https://dev.lfortran.org>
+https://dev.lfortran.org
 
 で実行してみよう!
 
 -   templateの例
 
-<https://fortran66.hatenablog.com/entry/2022/11/07/004514>
+https://fortran66.hatenablog.com/entry/2022/11/07/004514
 
-<https://fortran66.hatenablog.com/entry/2023/02/21/012205>
+https://fortran66.hatenablog.com/entry/2023/02/21/012205
 
 -   モノイド
 
-<https://ja.wikipedia.org/wiki/%E3%83%A2%E3%83%8E%E3%82%A4%E3%83%89>
+https://ja.wikipedia.org/wiki/%E3%83%A2%E3%83%8E%E3%82%A4%E3%83%89
