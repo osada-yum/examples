@@ -1,4 +1,4 @@
-#+TITLE: LFortranのtemplate機能でモノイドを実装する
+#+TITLE: LFortranのtemplate機能を試してみる(モノイド, バブルソート実装)
 #+AUTHOR: Osada Yuma
 #+options: num:4 ^:{}
 #+LaTeX_header: \usepackage{minted}
