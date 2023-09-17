@@ -39,13 +39,21 @@ OOPでは継承を利用して単位元メソッドと演算子メソッドを�
 - ~monoid_int32_add~ と ~monoid_int32_mul~ を組み合わせてることが可能になってしまっている(=select type= で弾くことは可能).
 - ~integer~ 型そのものではなく, ユーザ定義型を使わないといけない.
 - 実装が辛い?(個人の感想).
+- ~class(monoid_int32_base), alllocatable~ の配列を作るために, ~boxed_monoid_int32~ 型を定義している.
 #+md:ソースコード<details><div>
 #+md:
 #+begin_src fortran
   module monoid_class_m
     implicit none
     private
-    public :: monoid_int32_base, mconcat_array
+    public :: boxed_monoid_int32, monoid_int32_base, mconcat_array
+    type :: boxed_monoid_int32
+       private
+       class(monoid_int32_base), allocatable :: p_
+     contains
+       procedure, pass :: assign_boxed_monoid_int32
+       generic         :: assignment(=) => assign_boxed_monoid_int32
+    end type boxed_monoid_int32
     type, abstract :: monoid_int32_base
        private
      contains
@@ -71,14 +79,19 @@ OOPでは継承を利用して単位元メソッドと演算子メソッドを�
        end function identity_interface
     end interface
   contains
+    subroutine assign_boxed_monoid_int32(this, v)
+      class(boxed_monoid_int32), intent(inout) :: this
+      class(monoid_int32_base) , intent(in) :: v
+      this%p_ = v
+    end subroutine assign_boxed_monoid_int32
     function mconcat_array(n, arr) result(z)
       integer, intent(in) :: n
-      class(monoid_int32_base), intent(in) :: arr(n)
+      type(boxed_monoid_int32), intent(in) :: arr(n)
       class(monoid_int32_base), allocatable :: tmp
       integer :: z, i
-      tmp = arr(1)%identity()
+      tmp = arr(1)%p_%identity()
       do i = 1, n
-         tmp = tmp%op(arr(i))
+         tmp = tmp%op(arr(i)%p_)
       end do
       z = tmp%val()
     end function mconcat_array
@@ -233,29 +246,26 @@ OOPでは継承を利用して単位元メソッドと演算子メソッドを�
     implicit none
     integer, parameter :: n = 10
     integer :: i
+    type(boxed_monoid_int32) :: arr(n)
     add:block
-      type(monoid_int32_add) :: arr(n)
       do i = 1, n
          arr(i) = monoid_int32_add(i)
       end do
       print'(a, i0)', "mconcat add: ", mconcat_array(n, arr)
     end block add
     mul:block
-      type(monoid_int32_mul) :: arr(n)
       do i = 1, n
          arr(i) = monoid_int32_mul(i)
       end do
       print'(a, i0)', "mconcat mul: ", mconcat_array(n, arr)
     end block mul
     min:block
-      type(monoid_int32_min) :: arr(n)
       do i = 1, n
          arr(i) = monoid_int32_min(i)
       end do
       print'(a,i0)', "mconcat min: ", mconcat_array(n, arr)
     end block min
     max:block
-      type(monoid_int32_max) :: arr(n)
       do i = 1, n
          arr(i) = monoid_int32_max(i)
       end do
@@ -263,6 +273,12 @@ OOPでは継承を利用して単位元メソッドと演算子メソッドを�
     end block max
   end program test_monoid_class
 #+end_src
+
+#+RESULTS:
+| mconcat | add: |      55 |
+| mconcat | mul: | 3628800 |
+| mconcat | min: |       1 |
+| mconcat | max: |      10 |
 
 #+md:</div></details>
 #+md:
@@ -419,6 +435,51 @@ mconcat_sum:  55
 mconcat_prod:  3628800
 mconcat_min:  1
 mconcat_max:  10
+#+end_src
+** Haskellによるモノイド
+Haskellによるモノイドの実装は以下の通り.
+やっていることは LFortran のテンプレートと似たような構造を見出せなくはない.
+- 型クラス ~MyMonoid~ ~class ... where~ 以下の関数のインターフェース部分(Haskellの型宣言)が LFortranテンプレートの ~requirement~ で, 実装(~mymconcat~ の定義)部分が ~template~ の ~contains~ みたいなものである.
+- ~MyMonoid~ の ~instance ... where~ 以下が LFortranでの関数の定義である.
+- ~map MySum~ のような部分が LFortranテンプレートの ~instantiate~ 部分である(無理矢理?)
+#+begin_src haskell
+  main :: IO ()
+  main = do
+    let xs = [1..10]
+    print $ mymconcat . map MySum  $ xs
+    print $ mymconcat . map MyProd $ xs
+    print $ mymconcat . map MyMin  $ xs
+    print $ mymconcat . map MyMax  $ xs
+
+  class MyMonoid a where
+    mymempty :: a
+    mymappend :: a -> a -> a
+    mymconcat :: [a] -> a
+    mymconcat = foldr mymappend mymempty
+
+  data MySum = MySum Int deriving Show
+  instance MyMonoid MySum where
+    mymempty  = MySum 0
+    mymappend (MySum x) (MySum y) = MySum $ x + y
+  data MyProd = MyProd Int deriving Show
+  instance MyMonoid MyProd where
+    mymempty  = MyProd 1
+    mymappend (MyProd x) (MyProd y) = MyProd $ x * y
+  data MyMin = MyMin Int deriving Show
+  instance MyMonoid MyMin where
+    mymempty  = MyMin (maxBound :: Int)
+    mymappend (MyMin x) (MyMin y) = MyMin $ min x y
+  data MyMax = MyMax Int deriving Show
+  instance MyMonoid MyMax where
+    mymempty  = MyMax (minBound :: Int)
+    mymappend (MyMax x) (MyMax y) = MyMax $ max x y
+#+end_src
+
+#+begin_src text
+MySum 55
+MyProd 3628800
+MyMin 1
+MyMax 10
 #+end_src
 * ソート
 =template= を使うとOOPのクラスよりも楽にモノイドを実装できることがわかった.
