@@ -1,0 +1,109 @@
+#+TITLE: Fortran vs AtCoder 〜みずいろに変わったよ〜
+#+AUTHOR: Osada Yuma
+#+options: num:4 ^:{}
+#+LaTeX_header: \usepackage{minted}
+* いわゆる色変記事
+[[https://atcoder.jp/contests/abc320][ABC320]] (4週間前)でついに色がみずいろに変わったよ〜.
+
+[[file:my_rating.png]]
+
+というわけで, 色々振り返ってみる.
+* Fortran とは?
+- 数値計算向けのプログラミング言語.
+- その速さは C 言語に匹敵する.
+- 古いイメージがあるが, 今もなお大規模計算で使われていて, 割と現代的な要素も取り入れられている.
+* Fortran で競技プログラミングをしている感想
+** 言語の感想
+- 実行速度は速いので, 制限時間超過を気にすることはほとんどない.
+- 配列関係の操作だけは優れているため, 配列をアレコレすればよい問題は楽.
+
+- 配列以外のデータ構造はないので, 自分で作らなければいけないのは別によい.
+
+- C++ の template みたいなものがないため, データ構造を入れ子にする場合に面倒.
+- ラムダ式がないし, 関数がファーストクラスでないため関数の扱いが面倒.
+** 軌跡
+- 灰色時代, 茶色時代
+
+  よく覚えていない.
+  + ABCのA, B, C問題は意外と難しいけど, そこまで複雑なことをしないのでFortranに慣れることができたと思う.
+  + ソートして解ける問題を解いていた記憶がある.
+  + その他のデータ構造を使う問題はHaskellで解いていた気がする.
+- 緑時代
+
+  データ構造を実装し始める.
+  + union_find を作るのは比較的簡単であり, union_find 使うだけで解ける問題もあったような気がする.
+  + trie 木は文字列の問題を解くのに, 連想配列の代わりに使用していたが, 何故か速度的に遅かったので使わなくなった.
+  + 可変長配列を作るのは比較的簡単であり, グラフの問題を解くのに使っていた.
+  + queue を作るのは比較的簡単であり, BFS に使っていた.
+  + priority_queue を作るのは比較的簡単であり, dijkstra 法などに使っていた.
+  + B木を作るのはとてもとても大変であったが, 何かを成し遂げた気がする.
+  + Binary_indexed_tree と segment_tree は本番ではまだ使っていない.
+
+  鉄則本を読んだ.
+* Fortran で競技プログラミングする利点
+- 速い
+  C, C++ や Rust に匹敵する速さ.
+- 配列関係の操作は楽.
+  + src_fortran[:exports code]{write(6, '(*(i0, 1x))') arr(:)} で整数型の配列の全要素をスペース区切りで出力できる.
+  + src_fortran[:exports code]{arr(:) = 0} で配列の全要素を0に初期化できる.
+  + src_fortran[:exports code]{count(arr(:) == 0)} で配列の要素が0の個数をカウントできる.
+  + src_fortran[:exports code]{arr(-10:-1)} で配列の範囲を-10から-1にできる.
+    assumed shape array が標準であるのはFortranくらいでは?[^1]
+
+[^1]: C++ なら[]operatorを, Pythonなら__call__をオーバーロードすれば似たふるまいにできる? Julia の [[https://juliaarrays.github.io/OffsetArrays.jl/stable/][OffsetArrays.jl]] はFortran を参考にしているっぽい.
+- 入出力はちょっと楽.
+  + src_fortran[:exports code]{read(*, *) arr(:)} で配列に値を読み込める.
+  + src_fortran[:exports code]{write(*, '(*(i0, 1x))') arr(:)} でintegerの配列を1スペース区切りで出力できる.
+- 現代的なプログラミング言語に対する感謝の心が持てます...
+  template とか iterator とかファーストクラス関数とか欲しいよー.
+* Fortran で競技プログラミングする欠点
+- 対応しているサイトが少ない
+
+  [[https://atcoder.jp/][AtCoder]] と [[https://yukicoder.me/][yukicoder]] くらいしかない.
+- データ構造が配列くらいしかなく, アルゴリズム的な面では標準[^2]ではソートすらない.
+  + 頑張って実装しましょう...[^3]
+[^2]: 一応, AtCoder では [[https://github.com/fortran-lang/stdlib#getting-started][fortran-stdlib]] が使えるようになったのでソートとか連想配列とかは使える.
+
+[^3]: 実装頑張ってます...([[https://github.com/osada-yum/Fortran_competitive_library]])
+- 固定長の文字列のしかない
+  標準入力から読み込む際に面倒くさい.
+
+- 歴史を感じる...
+
+  今は非推奨か時代遅れな機能たち. それぞれ何をするか分かるか!?
+  + 固定形式
+  + src_fortran[:exports code]{IMPLICIT REAL*8(a-h, o-z)}
+  + src_fortran[:exports code]{ENTRY}
+  + src_fortran[:exports code]{GO TO 100}
+  + src_fortran[:exports code]{CONTINUE}
+  + src_fortran[:exports code]{110 FORMAT(I0, 1X)}
+  + src_fortran[:exports code]{COMMON}
+  + src_fortran[:exports code]{DATA VAR/3*3/}
+  + src_fortran[:exports code]{3.le.5}
+  + src_fortran[:exports code]{integer \:\: x = 3}
+* 参考
+- Fortran で AtCoder に挑む際に役に立ちそうなリンク集(順番はテキトー).
+
+[[https://qiita.com/Authns/items/ead3db3e4d073b06da67]]
+
+[[https://qiita.com/MUNKU_maple/items/0fe5cbcd59aaf228f1b8]]
+
+[[https://qiita.com/jj1guj/items/43a1c876360ddf180f1f]]
+
+[[https://qiita.com/ue1221/items/1f2c435a12d4d82cbbf8]]
+
+[[https://qiita.com/onodera/items/4f6c8353df044440c902]]
+
+- Fortran を学ぶのに役に立ちそうなサイトやリンク
+
+[[https://www.nag-j.co.jp/index.htm]]
+
+[[https://amanotk.github.io/fortran-resume-public/]]
+
+[[https://fortran-lang.org]]
+
+[[https://fortran-jp.org/]]
+
+[[https://qiita.com/implicit_none]]
+
+[[https://qiita.com/cure_honey]]
